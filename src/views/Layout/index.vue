@@ -18,6 +18,8 @@ onMounted(() => {
     <LayoutFixed />
     <LayoutNav />
     <LayoutHeader />
+    <!-- 添加key 确保路由变化时RouterView重新渲染 -->
+    <!-- <RouterView :key="$route.fullPath" /> -->
     <RouterView />
     <LayoutFooter />
 </template>
