@@ -2,7 +2,7 @@
 defineProps({
     good: {
         type: Object,
-        default: () => { }
+        default: () => ({})
     }
 })
 </script>
