@@ -1,6 +1,16 @@
 <script setup>
-
-
+import { getDetail } from '@/apis/detail';
+import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
+const goods = ref({})
+const route = useRoute()
+const getGoods = async () => {
+    const res = await getDetail(route.params.id)
+    goods.value = res.result
+}
+onMounted(() => {
+    getGoods()
+})
 </script>
 
 <template>
@@ -9,9 +19,11 @@
             <div class="bread-container">
                 <el-breadcrumb separator=">">
                     <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-                    <el-breadcrumb-item :to="{ path: '/' }">母婴
+                    <el-breadcrumb-item v-if="goods.detail" :to="{ path: `/category/${goods.categories[1].id}` }">{{
+                        goods.categories[1].name }}
                     </el-breadcrumb-item>
-                    <el-breadcrumb-item :to="{ path: '/' }">跑步鞋
+                    <el-breadcrumb-item v-if="goods.detail" :to="{ path: `/category/sub/${goods.categories[0].id}` }">{{
+                        goods.categories[0].name }}
                     </el-breadcrumb-item>
                     <el-breadcrumb-item>抓绒保暖，毛毛虫子儿童运动鞋</el-breadcrumb-item>
                 </el-breadcrumb>
@@ -27,17 +39,17 @@
                             <ul class="goods-sales">
                                 <li>
                                     <p>销量人气</p>
-                                    <p> 100+ </p>
+                                    <p> {{ goods.salesCount }}+ </p>
                                     <p><i class="iconfont icon-task-filling"></i>销量人气</p>
                                 </li>
                                 <li>
                                     <p>商品评价</p>
-                                    <p>200+</p>
+                                    <p>{{ goods.commemtCount }}+</p>
                                     <p><i class="iconfont icon-comment-filling"></i>查看评价</p>
                                 </li>
                                 <li>
                                     <p>收藏人气</p>
-                                    <p>300+</p>
+                                    <p>{{ goods.collectCount }}+</p>
                                     <p><i class="iconfont icon-favorite-filling"></i>收藏商品</p>
                                 </li>
                                 <li>
@@ -49,11 +61,11 @@
                         </div>
                         <div class="spec">
                             <!-- 商品信息区 -->
-                            <p class="g-name"> 抓绒保暖，毛毛虫儿童鞋 </p>
-                            <p class="g-desc">好穿 </p>
+                            <p class="g-name"> {{ goods.name }} </p>
+                            <p class="g-desc">{{ goods.desc }} </p>
                             <p class="g-price">
-                                <span>200</span>
-                                <span> 100</span>
+                                <span>{{ goods.oldPrice }}</span>
+                                <span> {{ goods.price }}</span>
                             </p>
                             <div class="g-service">
                                 <dl>
@@ -93,13 +105,13 @@
                                 <div class="goods-detail">
                                     <!-- 属性 -->
                                     <ul class="attrs">
-                                        <li v-for="item in 3" :key="item.value">
-                                            <span class="dt">白色</span>
-                                            <span class="dd">纯棉</span>
+                                        <li v-for="item in goods.details?.properties" :key="item.value">
+                                            <span class="dt">{{ item.name }}</span>
+                                            <span class="dd">{{ item.value }}</span>
                                         </li>
                                     </ul>
                                     <!-- 图片 -->
-
+                                    <img v-for="img in goods.details?.pictures" :src="img" :key="img" alt="">
                                 </div>
                             </div>
                         </div>
