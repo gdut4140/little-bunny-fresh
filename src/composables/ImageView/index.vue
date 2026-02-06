@@ -19,7 +19,12 @@ const target = ref(null);
 const { elementX, elementY, isOutside } = useMouseInElement(target)
 const left = ref(0)
 const top = ref(0)
+//控制大图显示
+const positionX = computed(() => -left.value * 2)
+const positionY = computed(() => -top.value * 2)
 watch([elementX, elementY], () => {
+    //如果鼠标没有移入到盒子里面，直接不执行后面逻辑
+    if (isOutside.value) return
     //有效范围内控制滑块距离
     //横向
     if (elementX.value > 100 && elementX.value < 300) {
@@ -35,6 +40,7 @@ watch([elementX, elementY], () => {
 
     if (elementY.value > 300) { top.value = 200 }
     if (elementY.value < 100) { top.value = 0 }
+
 
 })
 
@@ -59,11 +65,11 @@ watch([elementX, elementY], () => {
         <!-- 放大镜大图 -->
         <div class="large" :style="[
             {
-                backgroundImage: `url(${imageList[0]})`,
-                backgroundPositionX: `0px`,
-                backgroundPositionY: `0px`,
+                backgroundImage: `url(${imageList[activeIndex]})`,
+                backgroundPositionX: `${positionX}px`,
+                backgroundPositionY: `${positionY}px`,
             },
-        ]" v-show="false"></div>
+        ]" v-show="!isOutside"></div>
     </div>
 </template>
 
