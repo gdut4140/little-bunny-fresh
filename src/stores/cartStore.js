@@ -16,6 +16,12 @@ export const useCartStore = defineStore('cart', () => {
             cartList.value.push(goods)
         }
     }
+    //单选功能
+    const singleCheck = (skuId, selected) => {
+        //通过skuId找到要修改那一项
+        const item = cartList.value.find((item) => item.skuId === skuId)
+        item.selected = selected
+    }
     const delCart = (skuId) => {
         //方法一：找到删除下标值splice
         const idx = cartList.value.findIndex((item) => skuId == item.skuId)
@@ -34,7 +40,8 @@ export const useCartStore = defineStore('cart', () => {
         allCount,
         allPrice,
         addCart,
-        delCart
+        delCart,
+        singleCheck
     }
 },
     {
