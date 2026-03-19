@@ -1,8 +1,7 @@
 <script setup>
 import { useCartStore } from '@/stores/cartStore';
+import router from '@/router';
 const cartStore = useCartStore()
-
-
 
 </script>
 
@@ -37,7 +36,7 @@ const cartStore = useCartStore()
                     <p>共 {{ cartStore.allCount }} 件商品</p>
                     <p>&yen; {{ cartStore.allPrice }} </p>
                 </div>
-                <el-button size="large" type="primary">去购物车结算</el-button>
+                <el-button size="large" type="primary" @click="router.push('/cartList')">去购物车结算</el-button>
             </div>
         </div>
     </div>
