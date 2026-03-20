@@ -1,20 +1,34 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
+import { useUserStore } from "./user";
+import { insertCartAPI, findNewCartListAPI } from "@/apis/cart";
 export const useCartStore = defineStore('cart', () => {
+    const userStore = useUserStore()
     const cartList = ref([])
-    const addCart = (goods) => {
-        //添加购物车
-        //已经添加过count加1
-        //没有添加过直接push
-        //思路：通过匹配传过来的商品对象中的skuId能不能在cartList中找到，找到就是添加过
-        const item = cartList.value.find((cartItem) => goods.skuId === cartItem.skuId)
-        if (item) {
-            // 已经添加过，数量加1
-            item.count += goods.count
-        } else {
-            // 没有添加过，直接push
-            cartList.value.push(goods)
+    const isLogin = computed(() => userStore.userInfo.token)
+    const addCart = async (goods) => {
+        const { skuId, count } = goods
+        if (isLogin.value) {
+            //登录之后的加入购物车逻辑
+            await insertCartAPI({ skuId, count })
+            const res = await findNewCartListAPI()
+            cartList.value = res.result
         }
+        else {
+            //添加购物车
+            //已经添加过count加1
+            //没有添加过直接push
+            //思路：通过匹配传过来的商品对象中的skuId能不能在cartList中找到，找到就是添加过
+            const item = cartList.value.find((cartItem) => goods.skuId === cartItem.skuId)
+            if (item) {
+                // 已经添加过，数量加1
+                item.count += goods.count
+            } else {
+                // 没有添加过，直接push
+                cartList.value.push(goods)
+            }
+        }
+
     }
     //单选功能
     const singleCheck = (skuId, selected) => {
