@@ -1,6 +1,6 @@
 <script setup>
 import { useScroll } from '@vueuse/core'
-import { useCategoryStore } from '@/stores/category'
+import { useCategoryStore } from '@/stores/categoryStore'
 const { y } = useScroll(window)//获取y轴坐标的响应式滚动
 //使用pinia里的数据
 const categoryStore = useCategoryStore()

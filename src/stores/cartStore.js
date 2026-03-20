@@ -1,18 +1,22 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { useUserStore } from "./user";
-import { insertCartAPI, findNewCartListAPI } from "@/apis/cart";
+import { useUserStore } from "./userStore";
+import { insertCartAPI, findNewCartListAPI, delCartAPI } from "@/apis/cart";
 export const useCartStore = defineStore('cart', () => {
     const userStore = useUserStore()
     const cartList = ref([])
     const isLogin = computed(() => userStore.userInfo.token)
+    //获取最新购物车列表action
+    const updateNewList = async () => {
+        const res = await findNewCartListAPI()
+        cartList.value = res.result
+    }
     const addCart = async (goods) => {
         const { skuId, count } = goods
         if (isLogin.value) {
             //登录之后的加入购物车逻辑
             await insertCartAPI({ skuId, count })
-            const res = await findNewCartListAPI()
-            cartList.value = res.result
+            updateNewList()
         }
         else {
             //添加购物车
@@ -30,19 +34,26 @@ export const useCartStore = defineStore('cart', () => {
         }
 
     }
+    //删除购物车
+    const delCart = async (skuId) => {
+        if (isLogin.value) {
+            //调用接口实现接口购物车删除
+            await delCartAPI([skuId])
+            updateNewList()
+        }
+        else {
+            //方法一：找到删除下标值splice
+            const idx = cartList.value.findIndex((item) => skuId == item.skuId)
+            cartList.value.splice(idx, 1)
+            //方法二：过滤方法filter
+            // cartList.value = cartList.value.filter(item => skuId !== item.skuId)
+        }
+    }
     //单选功能
     const singleCheck = (skuId, selected) => {
         //通过skuId找到要修改那一项
         const item = cartList.value.find((item) => item.skuId === skuId)
         item.selected = selected
-    }
-    const delCart = (skuId) => {
-        //方法一：找到删除下标值splice
-        const idx = cartList.value.findIndex((item) => skuId == item.skuId)
-        cartList.value.splice(idx, 1)
-        //方法二：过滤方法filter
-        // cartList.value = cartList.value.filter(item => skuId !== item.skuId)
-
     }
     //全选功能
     const allCheck = (selected) => {
